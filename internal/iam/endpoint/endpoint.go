@@ -3,7 +3,7 @@ package endpoint
 import (
 	"context"
 
-	"kit-study/service"
+	"kit-study/internal/iam/service"
 
 	"github.com/go-kit/kit/endpoint"
 )
@@ -18,6 +18,7 @@ func NewEndPointServer(svc service.Service) EndPointServer {
 	var healthEndPoint endpoint.Endpoint
 	{
 		healthEndPoint = MakeHealthEndPoint(svc)
+		healthEndPoint = logMiddleware()(healthEndPoint)
 	}
 	return EndPointServer{
 		HealthEndPoint: healthEndPoint,

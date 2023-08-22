@@ -2,22 +2,26 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"kit-study/endpoint"
-	"kit-study/service"
-	"kit-study/transport"
+	"kit-study/internal/iam/endpoint"
+	"kit-study/internal/iam/service"
+	"kit-study/internal/iam/transport"
 	"net"
 
 	"net/http"
+
+	"kit-study/internal/pkg/log"
 
 	"go.uber.org/fx"
 )
 
 func main() {
+
 	fx.New(
 		fx.Provide(
-			endpoint.NewEndPointServer,
+			log.LogOptions,
+			log.NewLogger,
 			service.NewService,
+			endpoint.NewEndPointServer,
 			transport.NewHttpHandler,
 		),
 		fx.Invoke(
@@ -34,7 +38,7 @@ func NewHTTPServer(lc fx.Lifecycle, handler http.Handler) *http.Server {
 			if err != nil {
 				return err
 			}
-			fmt.Println("Starting HTTP server at", srv.Addr)
+			log.Infow("Starting HTTP server at", "addr", srv.Addr)
 			go srv.Serve(ln)
 			return nil
 		},

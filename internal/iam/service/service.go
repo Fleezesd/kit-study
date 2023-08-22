@@ -10,15 +10,18 @@ type Service interface {
 }
 
 func NewService() Service {
-	return &serviceServer{}
+	var server Service
+	server = &baseServer{}
+	server = NewLogMiddlewareServer()(server)
+	return server
 }
 
-type serviceServer struct {
+type baseServer struct {
 }
 
 // 确保 baseServer 实现了接口
-var _ Service = (*serviceServer)(nil)
+var _ Service = (*baseServer)(nil)
 
-func (s serviceServer) Health(ctx context.Context) (string, error) {
+func (s baseServer) Health(ctx context.Context) (string, error) {
 	return fmt.Sprintln("health"), nil
 }
