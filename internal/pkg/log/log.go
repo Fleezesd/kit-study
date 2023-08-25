@@ -1,4 +1,3 @@
-// Package log is a log package used by miniblog project.
 package log
 
 import (
