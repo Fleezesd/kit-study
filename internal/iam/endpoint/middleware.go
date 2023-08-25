@@ -7,6 +7,8 @@ import (
 	"kit-study/pkg/token"
 	"time"
 
+	"go.uber.org/ratelimit"
+
 	"kit-study/internal/iam/service"
 	"kit-study/internal/pkg/log"
 
@@ -43,5 +45,14 @@ func AuthMiddleware() endpoint.Middleware {
 			return next(ctx, request)
 		}
 
+	}
+}
+
+func UberRateMiddleware(limit ratelimit.Limiter) endpoint.Middleware {
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+			limit.Take()
+			return next(ctx, request)
+		}
 	}
 }

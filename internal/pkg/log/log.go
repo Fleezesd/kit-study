@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// Logger 定义了 miniblog 项目的日志接口. 该接口只包含了支持的日志记录方法.
+// Logger 定义了日志接口. 该接口只包含了支持的日志记录方法.
 type Logger interface {
 	Debugw(msg string, keysAndValues ...interface{})
 	Infow(msg string, keysAndValues ...interface{})

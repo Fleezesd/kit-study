@@ -5,7 +5,9 @@ import (
 	"kit-study/internal/iam/endpoint"
 	"kit-study/internal/iam/service"
 	"kit-study/internal/iam/transport"
+	"kit-study/pkg/rate"
 	"net"
+
 
 	"net/http"
 
@@ -15,11 +17,9 @@ import (
 )
 
 func main() {
-
 	fx.New(
 		fx.Provide(
-			log.LogOptions,
-			log.NewLogger,
+			rate.NewRateLimiter,
 			service.NewService,
 			endpoint.NewEndPointServer,
 			transport.NewHttpHandler,

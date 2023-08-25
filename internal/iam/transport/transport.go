@@ -41,5 +41,7 @@ func NewHttpHandler(endpoint e.EndPointServer) http.Handler {
 		encodeHTTPGenericResponse,
 		options...,
 	))
+
+	
 	return m
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"kit-study/internal/iam/service/dto"
 
+	"go.uber.org/ratelimit"
+
 	"kit-study/internal/iam/service"
 
 	"github.com/go-kit/kit/endpoint"
@@ -16,16 +18,19 @@ type EndPointServer struct {
 	LoginEndPoint  endpoint.Endpoint
 }
 
-func NewEndPointServer(svc service.Service) EndPointServer {
+func NewEndPointServer(svc service.Service, limiter ratelimit.Limiter) EndPointServer {
 	var healthEndPoint endpoint.Endpoint
 	{
 		healthEndPoint = MakeHealthEndPoint(svc)
 		healthEndPoint = logMiddleware()(healthEndPoint)
+		healthEndPoint = AuthMiddleware()(healthEndPoint)
+		healthEndPoint = UberRateMiddleware(limiter)(healthEndPoint)
 	}
 	var loginEndPoint endpoint.Endpoint
 	{
 		loginEndPoint = MakeLoginEndPoint(svc)
 		loginEndPoint = logMiddleware()(loginEndPoint)
+		loginEndPoint = UberRateMiddleware(limiter)(loginEndPoint)
 	}
 	return EndPointServer{
 		HealthEndPoint: healthEndPoint,
