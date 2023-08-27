@@ -1,0 +1,21 @@
+syntax = "proto3";
+package pb;
+
+option go_package = "github.com/fleezesd/kit-study/pkg/proto/iam";
+
+service User {
+    rpc RpcUserLogin (LoginRequest) returns(LoginResponse) {
+    }
+}
+
+message LoginRequest {
+    string Username = 1;
+    string Password = 2;
+}
+
+message LoginResponse {
+    string Token = 1;
+}
+
+
+

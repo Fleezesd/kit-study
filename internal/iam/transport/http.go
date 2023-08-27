@@ -2,20 +2,20 @@ package transport
 
 import (
 	"context"
-	"kit-study/pkg/token"
 	"net/http"
 
-	e "kit-study/internal/iam/endpoint"
+	ep "github.com/fleezesd/kit-study/internal/iam/endpoint"
+	"github.com/fleezesd/kit-study/pkg/token"
 
-	"kit-study/internal/iam/service"
-	"kit-study/internal/pkg/log"
+	"github.com/fleezesd/kit-study/internal/iam/service"
+	"github.com/fleezesd/kit-study/internal/pkg/log"
 
 	httptransport "github.com/go-kit/kit/transport/http"
 	uuid "github.com/satori/go.uuid"
 )
 
 // http Handler
-func NewHttpHandler(endpoint e.EndPointServer) http.Handler {
+func NewHttpHandler(endpoint ep.EndPointServer) http.Handler {
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorEncoder(errorEncoder), //程序中的全部报错都会走这里面
 		httptransport.ServerBefore(func(ctx context.Context, request *http.Request) context.Context { // 添加middleware 增加请求的uuid
@@ -42,6 +42,5 @@ func NewHttpHandler(endpoint e.EndPointServer) http.Handler {
 		options...,
 	))
 
-	
 	return m
 }

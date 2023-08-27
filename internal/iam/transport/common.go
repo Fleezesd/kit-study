@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"kit-study/internal/iam/service"
-	"kit-study/internal/iam/service/dto"
-	"kit-study/internal/pkg/log"
+	"github.com/fleezesd/kit-study/internal/iam/service"
+	"github.com/fleezesd/kit-study/internal/iam/service/dto"
+	"github.com/fleezesd/kit-study/internal/pkg/log"
 	"net/http"
 
 	"github.com/go-kit/kit/endpoint"

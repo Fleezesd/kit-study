@@ -3,15 +3,15 @@ package service
 import (
 	"context"
 	"fmt"
-	"kit-study/internal/iam/service/dto"
-	"kit-study/internal/pkg/errno"
-	"kit-study/internal/pkg/log"
-	"kit-study/pkg/auth"
-	"kit-study/pkg/token"
+	"github.com/fleezesd/kit-study/internal/iam/service/dto"
+	"github.com/fleezesd/kit-study/internal/pkg/errno"
+	"github.com/fleezesd/kit-study/internal/pkg/log"
+	"github.com/fleezesd/kit-study/pkg/auth"
+	"github.com/fleezesd/kit-study/pkg/token"
 )
 
 type Service interface {
-	Health(ctx context.Context) (string, error)
+	Health(ctx context.Context, request interface{}) (res interface{}, err error)
 	Login(ctx context.Context, req dto.LoginRequest) (rsp dto.LoginResponse, err error)
 }
 
@@ -28,7 +28,7 @@ type baseServer struct {
 // 确保 baseServer 实现了接口
 var _ Service = (*baseServer)(nil)
 
-func (s baseServer) Health(ctx context.Context) (string, error) {
+func (s baseServer) Health(ctx context.Context, request interface{}) (res interface{}, err error) {
 	log.Debugw(fmt.Sprint(ctx.Value(ContextReqUUid), "service", "health"))
 	return fmt.Sprintln("health"), nil
 }

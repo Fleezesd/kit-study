@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"kit-study/internal/pkg/known"
+	"github.com/fleezesd/kit-study/internal/pkg/known"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -22,13 +22,13 @@ type Logger interface {
 	Sync()
 }
 
-// zapLogger 是 Logger 接口的具体实现. 它底层封装了 zap.Logger.
-type zapLogger struct {
+// ZapLogger 是 Logger 接口的具体实现. 它底层封装了 zap.Logger.
+type ZapLogger struct {
 	z *zap.Logger
 }
 
-// 确保 zapLogger 实现了 Logger 接口. 以下变量赋值，可以使错误在编译期被发现.
-var _ Logger = &zapLogger{}
+// 确保 ZapLogger 实现了 Logger 接口. 以下变量赋值，可以使错误在编译期被发现.
+var _ Logger = &ZapLogger{}
 
 var (
 	mu sync.Mutex
@@ -46,7 +46,7 @@ func Init(opts *Options) {
 }
 
 // NewLogger 根据传入的 opts 创建 Logger.
-func NewLogger(opts *Options) *zapLogger {
+func NewLogger(opts *Options) *ZapLogger {
 	if opts == nil {
 		opts = NewOptions()
 	}
@@ -96,7 +96,7 @@ func NewLogger(opts *Options) *zapLogger {
 	if err != nil {
 		panic(err)
 	}
-	logger := &zapLogger{z: z}
+	logger := &ZapLogger{z: z}
 
 	// 把标准库的 log.Logger 的 info 级别的输出重定向到 zap.Logger
 	zap.RedirectStdLog(z)
@@ -107,7 +107,7 @@ func NewLogger(opts *Options) *zapLogger {
 // Sync 调用底层 zap.Logger 的 Sync 方法，将缓存中的日志刷新到磁盘文件中. 主程序需要在退出前调用 Sync.
 func Sync() { std.Sync() }
 
-func (l *zapLogger) Sync() {
+func (l *ZapLogger) Sync() {
 	_ = l.z.Sync()
 }
 
@@ -116,7 +116,7 @@ func Debugw(msg string, keysAndValues ...interface{}) {
 	std.z.Sugar().Debugw(msg, keysAndValues...)
 }
 
-func (l *zapLogger) Debugw(msg string, keysAndValues ...interface{}) {
+func (l *ZapLogger) Debugw(msg string, keysAndValues ...interface{}) {
 	l.z.Sugar().Debugw(msg, keysAndValues...)
 }
 
@@ -125,7 +125,7 @@ func Infow(msg string, keysAndValues ...interface{}) {
 	std.z.Sugar().Infow(msg, keysAndValues...)
 }
 
-func (l *zapLogger) Infow(msg string, keysAndValues ...interface{}) {
+func (l *ZapLogger) Infow(msg string, keysAndValues ...interface{}) {
 	l.z.Sugar().Infow(msg, keysAndValues...)
 }
 
@@ -134,7 +134,7 @@ func Warnw(msg string, keysAndValues ...interface{}) {
 	std.z.Sugar().Warnw(msg, keysAndValues...)
 }
 
-func (l *zapLogger) Warnw(msg string, keysAndValues ...interface{}) {
+func (l *ZapLogger) Warnw(msg string, keysAndValues ...interface{}) {
 	l.z.Sugar().Warnw(msg, keysAndValues...)
 }
 
@@ -143,7 +143,7 @@ func Errorw(msg string, keysAndValues ...interface{}) {
 	std.z.Sugar().Errorw(msg, keysAndValues...)
 }
 
-func (l *zapLogger) Errorw(msg string, keysAndValues ...interface{}) {
+func (l *ZapLogger) Errorw(msg string, keysAndValues ...interface{}) {
 	l.z.Sugar().Errorw(msg, keysAndValues...)
 }
 
@@ -152,7 +152,7 @@ func Panicw(msg string, keysAndValues ...interface{}) {
 	std.z.Sugar().Panicw(msg, keysAndValues...)
 }
 
-func (l *zapLogger) Panicw(msg string, keysAndValues ...interface{}) {
+func (l *ZapLogger) Panicw(msg string, keysAndValues ...interface{}) {
 	l.z.Sugar().Panicw(msg, keysAndValues...)
 }
 
@@ -161,19 +161,19 @@ func Fatalw(msg string, keysAndValues ...interface{}) {
 	std.z.Sugar().Fatalw(msg, keysAndValues...)
 }
 
-func (l *zapLogger) Fatalw(msg string, keysAndValues ...interface{}) {
+func (l *ZapLogger) Fatalw(msg string, keysAndValues ...interface{}) {
 	l.z.Sugar().Fatalw(msg, keysAndValues...)
 }
 
 // C 解析传入的 context，尝试提取关注的键值，并添加到 zap.Logger 结构化日志中.
-func C(ctx context.Context) *zapLogger {
+func C(ctx context.Context) *ZapLogger {
 	// std 全局Logger
 	return std.C(ctx)
 }
 
-func (l *zapLogger) C(ctx context.Context) *zapLogger {
+func (l *ZapLogger) C(ctx context.Context) *ZapLogger {
 	lc := l.clone()
-	
+
 	if requestID := ctx.Value(known.XRequestIDKey); requestID != nil {
 		// 从context中提取 XRequestID 存在即添加到 zap.logger上
 		lc.z = lc.z.With(zap.Any(known.XRequestIDKey, requestID))
@@ -186,8 +186,8 @@ func (l *zapLogger) C(ctx context.Context) *zapLogger {
 	return lc
 }
 
-// clone 深度拷贝 zapLogger.
-func (l *zapLogger) clone() *zapLogger {
+// clone 深度拷贝 ZapLogger.
+func (l *ZapLogger) clone() *ZapLogger {
 	lc := *l
 	return &lc
 }

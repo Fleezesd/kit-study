@@ -3,14 +3,15 @@ package endpoint
 import (
 	"context"
 	"fmt"
-	"kit-study/internal/pkg/errno"
-	"kit-study/pkg/token"
 	"time"
+
+	"github.com/fleezesd/kit-study/internal/pkg/errno"
+	"github.com/fleezesd/kit-study/pkg/token"
 
 	"go.uber.org/ratelimit"
 
-	"kit-study/internal/iam/service"
-	"kit-study/internal/pkg/log"
+	"github.com/fleezesd/kit-study/internal/iam/service"
+	"github.com/fleezesd/kit-study/internal/pkg/log"
 
 	"github.com/go-kit/kit/endpoint"
 )
