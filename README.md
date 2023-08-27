@@ -23,4 +23,6 @@
 - grpc_server grpc_client 建立
 - makefile scripts 雏形建造 初步做了protoc 命令建立 后续添加其他make命令
 - fx 兼容grpc_server
-- log 日志库改造 errorhandler ZapLogger 全局使用 
+- log 日志库改造 errorhandler ZapLogger 全局使用
+
+# v5- etcd 服务注册与发现
