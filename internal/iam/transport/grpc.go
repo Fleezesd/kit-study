@@ -5,7 +5,6 @@ import (
 
 	ep "github.com/fleezesd/kit-study/internal/iam/endpoint"
 	"github.com/fleezesd/kit-study/internal/iam/service"
-	"github.com/fleezesd/kit-study/internal/iam/service/dto"
 	"github.com/fleezesd/kit-study/internal/pkg/log"
 	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
@@ -36,12 +35,9 @@ func GRPCLoginRequest(_ context.Context, grpcReq interface{}) (interface{}, erro
 }
 
 func GRPCLoginResponse(_ context.Context, grpcRsp interface{}) (interface{}, error) {
-	// 因兼容到http底层service确定好的结构, 而做的转换, 官方不建议
-	rsp := grpcRsp.(dto.LoginResponse)
+	rsp := grpcRsp.(*pb.LoginResponse)
 	log.Debugw("请求结束返回值", "loginResponse", rsp)
-	return &pb.LoginResponse{
-		Token: rsp.Token,
-	}, nil
+	return rsp, nil
 }
 
 // NewGRPCServer makes a set of endpoints available as a gRPC AddServer.

@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	addr = flag.String("addr", "localhost:9090", "The address to connect to.")
+	addr = flag.String("addr", ":9090", "The address to connect to.")
 )
 
 func TestGRPCClient(t *testing.T) {

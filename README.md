@@ -25,4 +25,8 @@
 - fx 兼容grpc_server
 - log 日志库改造 errorhandler ZapLogger 全局使用
 
-# v5- etcd 服务注册与发现
+# v5- etcd 服务注册与发现 & user_agent_client 集成grpc_client & fx集成etcd
+- 建立etcd 服务注册registry & 服务发现selector
+- grpc服务集成 http & etcd服务注册 registry(后续也可集成kit sd) & kit sd 下的服务发现和负载均衡
+- grpc client & usr_agent_client 集成完善 保证etcd和grpc服务打通
+- http 服务修改为rpc 对应proto结构 保证http和rpc服务都可运行

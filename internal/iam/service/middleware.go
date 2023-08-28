@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/fleezesd/kit-study/internal/iam/service/dto"
+
 	"github.com/fleezesd/kit-study/internal/pkg/log"
+	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 )
 
 // 抽象:对应 Service 安装中间件 (serivce加一层装饰)
@@ -37,7 +38,7 @@ func (l *logMiddleware) Health(ctx context.Context, request interface{}) (rsp in
 	return rsp, nil
 }
 
-func (l *logMiddleware) Login(ctx context.Context, req dto.LoginRequest) (rsp dto.LoginResponse, err error) {
+func (l *logMiddleware) Login(ctx context.Context, req *pb.LoginRequest) (rsp *pb.LoginResponse, err error) {
 	defer func() {
 		log.Debugw(fmt.Sprint(ctx.Value(ContextReqUUid)), "logmiddleware", "service-login", "res", rsp)
 	}()

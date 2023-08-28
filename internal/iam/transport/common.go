@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/fleezesd/kit-study/internal/iam/service"
-	"github.com/fleezesd/kit-study/internal/iam/service/dto"
-	"github.com/fleezesd/kit-study/internal/pkg/log"
 	"net/http"
+
+	"github.com/fleezesd/kit-study/internal/iam/service"
+	"github.com/fleezesd/kit-study/internal/pkg/log"
+	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 
 	"github.com/go-kit/kit/endpoint"
 )
@@ -21,7 +22,7 @@ func decodeHTTPHealthRequest(ctx context.Context, r *http.Request) (interface{},
 }
 
 func decodeHTTPLoginRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var login dto.LoginRequest
+	var login *pb.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&login) // 从body体中拿取
 	if err != nil {
 		return nil, err

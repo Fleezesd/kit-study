@@ -3,8 +3,6 @@ package endpoint
 import (
 	"context"
 
-	"github.com/fleezesd/kit-study/internal/iam/service/dto"
-
 	"go.uber.org/ratelimit"
 
 	"github.com/fleezesd/kit-study/internal/iam/service"
@@ -63,23 +61,16 @@ func (s EndPointServer) Health(ctx context.Context, request interface{}) (res in
 
 func MakeLoginEndPoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		if req, ok := request.(dto.LoginRequest); ok {
-			req = request.(dto.LoginRequest)
-			return s.Login(ctx, req)
-		} else {
-			// 为了直接使用 service 层的方法 需要一层grpc结构转换
-			grpcReq := request.(*pb.LoginRequest)
-			req = dto.LoginRequest{
-				Username: grpcReq.Username,
-				Password: grpcReq.Password,
-			}
-			return s.Login(ctx, req)
-		}
+		req := request.(*pb.LoginRequest)
+		return s.Login(ctx, req)
 	}
 }
 
-func (s EndPointServer) Login(ctx context.Context, req dto.LoginRequest) (rsp dto.LoginResponse, err error) {
+func (s EndPointServer) Login(ctx context.Context, req *pb.LoginRequest) (rsp *pb.LoginResponse, err error) {
 	res, err := s.LoginEndPoint(ctx, req)
-	rsp = res.(dto.LoginResponse)
+	if err != nil {
+		return &pb.LoginResponse{}, err
+	}
+	rsp = res.(*pb.LoginResponse)
 	return
 }

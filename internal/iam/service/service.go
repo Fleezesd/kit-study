@@ -3,16 +3,17 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/fleezesd/kit-study/internal/iam/service/dto"
+
 	"github.com/fleezesd/kit-study/internal/pkg/errno"
 	"github.com/fleezesd/kit-study/internal/pkg/log"
 	"github.com/fleezesd/kit-study/pkg/auth"
+	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 	"github.com/fleezesd/kit-study/pkg/token"
 )
 
 type Service interface {
 	Health(ctx context.Context, request interface{}) (res interface{}, err error)
-	Login(ctx context.Context, req dto.LoginRequest) (rsp dto.LoginResponse, err error)
+	Login(ctx context.Context, req *pb.LoginRequest) (rsp *pb.LoginResponse, err error)
 }
 
 func NewService() Service {
@@ -33,7 +34,8 @@ func (s baseServer) Health(ctx context.Context, request interface{}) (res interf
 	return fmt.Sprintln("health"), nil
 }
 
-func (s baseServer) Login(ctx context.Context, req dto.LoginRequest) (rsp dto.LoginResponse, err error) {
+func (s baseServer) Login(ctx context.Context, req *pb.LoginRequest) (rsp *pb.LoginResponse, err error) {
+	rsp = &pb.LoginResponse{}
 	log.Debugw(fmt.Sprint(ctx.Value(ContextReqUUid)), "service", "login")
 	if req.Username != "admin" {
 		return rsp, errno.ErrUserNotFound
@@ -44,7 +46,7 @@ func (s baseServer) Login(ctx context.Context, req dto.LoginRequest) (rsp dto.Lo
 	}
 	rsp.Token, err = token.Sign(req.Username)
 	if err != nil {
-		return rsp, errno.ErrSignToken
+		return nil, errno.ErrSignToken
 	}
 	return
 }

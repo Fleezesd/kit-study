@@ -1,4 +1,4 @@
-package main
+package etcd
 
 import (
 	"context"
@@ -132,4 +132,46 @@ func (s *registryServer) GetVal(node Node) (string, error) {
 }
 func (e *registryServer) HashKey(addr string) uint32 {
 	return crc32.ChecksumIEEE([]byte(addr))
+}
+
+func RegistryEtcd(addr string, ttl time.Duration) (Registry, error) {
+	// etcd 配置
+	etcdConfig := clientv3.Config{
+		Endpoints:         []string{"localhost:2379"}, // etcd 地址
+		DialTimeout:       ttl,
+		DialKeepAliveTime: ttl,
+	}
+
+	// 创建一个 Registry 实例
+	registry, err := NewRegistry(Options{
+		name:   "svc.user.agent",     // 你的服务名称
+		ttl:    int64(ttl.Seconds()), // TTL 秒数
+		config: etcdConfig,           // etcd 配置
+	})
+	if err != nil {
+		log.Fatal("Failed to create registry:", err)
+		return nil, err
+	}
+
+	// 注册节点
+	node := PutNode{
+		Addr: addr, // 你的服务地址
+	}
+	err = registry.RegistryNode(node)
+	if err != nil {
+		log.Fatal("Failed to register node:", err)
+		return nil, err
+	}
+
+	return registry, nil
+}
+
+func GetAddr(instance string) string {
+	var node Node
+	err := json.Unmarshal([]byte(instance), &node)
+	if err != nil {
+		log.Fatal("Failed to get addr:", err)
+		return ""
+	}
+	return node.Addr
 }
