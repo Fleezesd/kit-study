@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"flag"
 	"testing"
 
 	"google.golang.org/grpc"
@@ -14,15 +13,11 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-var (
-	addr = flag.String("addr", ":9090", "The address to connect to.")
-)
-
 func TestGRPCClient(t *testing.T) {
-	serviceAddress := "localhost:9090"
+	serviceAddress := "localhost:8081"
 	conn, err := grpc.Dial(serviceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		panic("connect error")
+		t.Fatal("connect error")
 	}
 	defer conn.Close()
 	userClient := pb.NewUserClient(conn)
@@ -38,4 +33,12 @@ func TestGRPCClient(t *testing.T) {
 		return
 	}
 	t.Log(res.Token)
+}
+
+func BenchmarkGRPCClient(b *testing.B) {
+
+}
+
+func ExampleTestGRPCClient() {
+
 }

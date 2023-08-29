@@ -9,7 +9,7 @@ import (
 
 	"net/http"
 
-"github.com/fleezesd/kit-study/internal/iam/client/etcd"
+	"github.com/fleezesd/kit-study/internal/iam/client/etcd"
 	"github.com/fleezesd/kit-study/internal/iam/endpoint"
 	"github.com/fleezesd/kit-study/internal/iam/service"
 	"github.com/fleezesd/kit-study/internal/iam/transport"
@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	httpAddr = flag.String("h", ":8080", "httpAddr")
-	grpcAddr = flag.String("g", "127.0.0.1:9090", "grpcAddr")
+	httpAddr = flag.String("h", "127.0.0.1:8080", "httpAddr")
+	grpcAddr = flag.String("g", "127.0.0.1:8081", "grpcAddr")
 )
 
 func HTTPServerRun(lc fx.Lifecycle, handler http.Handler) {
@@ -55,7 +55,6 @@ func GRPCServerRun(lc fx.Lifecycle, grpcServer pb.UserServer) {
 	)
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			//grpc启动
 			ln, err := net.Listen("tcp", *grpcAddr)
 			if err != nil {
 				log.Fatalw("failed to listen", "err", err)
@@ -63,6 +62,7 @@ func GRPCServerRun(lc fx.Lifecycle, grpcServer pb.UserServer) {
 			}
 			log.Infow("Starting GRPC server at", "addr", *grpcAddr)
 			pb.RegisterUserServer(srv, grpcServer)
+			// grpc 服务启动
 			go srv.Serve(ln)
 			// etcd 注册
 			registry, err = etcd.RegistryEtcd(*grpcAddr, 10*time.Second)

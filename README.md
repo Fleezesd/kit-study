@@ -30,3 +30,8 @@
 - grpc服务集成 http & etcd服务注册 registry(后续也可集成kit sd) & kit sd 下的服务发现和负载均衡
 - grpc client & usr_agent_client 集成完善 保证etcd和grpc服务打通
 - http 服务修改为rpc 对应proto结构 保证http和rpc服务都可运行
+
+# v6- 集成prometheus 
+- 建立prometheus 服务中间件metric-middleware
+- 服务请求次数 counter, 请求时间 histogram柱状图
+- prometheus 采集服务metric

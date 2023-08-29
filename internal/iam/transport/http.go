@@ -6,6 +6,7 @@ import (
 
 	ep "github.com/fleezesd/kit-study/internal/iam/endpoint"
 	"github.com/fleezesd/kit-study/pkg/token"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/fleezesd/kit-study/internal/iam/service"
 	"github.com/fleezesd/kit-study/internal/pkg/log"
@@ -41,6 +42,7 @@ func NewHttpHandler(endpoint ep.EndPointServer) http.Handler {
 		encodeHTTPGenericResponse,
 		options...,
 	))
-
+	// prometheus metrics
+	m.Handle("/metrics", promhttp.Handler())
 	return m
 }

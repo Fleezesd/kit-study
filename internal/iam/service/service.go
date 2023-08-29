@@ -12,7 +12,7 @@ import (
 )
 
 type Service interface {
-	Health(ctx context.Context, request interface{}) (res interface{}, err error)
+	Health(ctx context.Context, request interface{}) (rsp interface{}, err error)
 	Login(ctx context.Context, req *pb.LoginRequest) (rsp *pb.LoginResponse, err error)
 }
 
@@ -20,6 +20,7 @@ func NewService() Service {
 	var server Service
 	server = &baseServer{}
 	server = NewLogMiddlewareServer()(server)
+	server = NewMetricsMiddlewareServer()(server)
 	return server
 }
 
