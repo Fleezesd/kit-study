@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/afex/hystrix-go/hystrix"
+	utils "github.com/fleezesd/kit-study/pkg/hystrix"
 	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 	"github.com/go-kit/log"
 )
@@ -23,7 +25,12 @@ func TestUserAgentClient(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	for i := 0; i < 1; i++ {
+	// 调用服务名称
+	serviceName := "login"
+	// 服务熔断
+	hy := utils.NewHystrix("调用服务降级")
+	circuit, _, _ := hystrix.GetCircuit(serviceName)
+	for i := 0; i < 100; i++ {
 		time.Sleep(time.Second)
 		userAgent, err := client.UserAgentClient()
 		if err != nil {
@@ -31,15 +38,23 @@ func TestUserAgentClient(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		rsp, err := userAgent.Login(context.Background(), &pb.LoginRequest{
-			Username: "admin",
-			Password: "xxx",
+		// 调用封装好的hystrix
+		err = hy.Run(serviceName, func() error {
+			rsp, err := userAgent.Login(context.Background(), &pb.LoginRequest{
+				Username: "admin",
+				Password: "xxx",
+			})
+			if err != nil {
+				t.Error(err)
+				return err
+			}
+			t.Log(rsp)
+			return nil
 		})
+		t.Log("熔断器开启状态:", circuit.IsOpen(), "请求是否允许：", circuit.AllowRequest())
 		if err != nil {
-			t.Error(err)
-			return
+			t.Log(err)
 		}
-		t.Log(rsp)
 	}
 
 }
