@@ -8,8 +8,11 @@ import (
 	"github.com/fleezesd/kit-study/internal/pkg/log"
 	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
+	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/metadata"
 )
+
+var tracer = otel.Tracer("kit-server")
 
 type grpcServer struct {
 	login grpctransport.Handler
@@ -45,6 +48,8 @@ func NewGRPCServer(endpoint ep.EndPointServer, logger *log.ZapLogger) pb.UserSer
 	options := []grpctransport.ServerOption{
 		grpctransport.ServerBefore(func(ctx context.Context, m metadata.MD) context.Context {
 			ctx = context.WithValue(ctx, service.ContextReqUUid, m.Get(service.ContextReqUUid))
+			// tracer 放入context中
+			ctx = context.WithValue(context.Background(), "tracer", tracer)
 			return ctx
 		}),
 		grpctransport.ServerErrorHandler(log.NewLogErrorHandler(logger)),

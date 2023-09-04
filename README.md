@@ -36,3 +36,9 @@
 - 服务请求次数 counter, 请求时间 histogram柱状图
 - prometheus 采集服务metric
 - 集成服务熔断 Hystrix 对出错服务进行服务降级，降低级联错误
+
+# v7- 链路追踪 集成openTelemetry trace
+- 建立 TraceProvider 设立exporter(目前为最简单的stdout) resource 相关属性设定
+- tracer 基础trace 建立初始span为后续服务span连通 保证整个请求链路连通 后续优化
+- 踩了很多坑 推荐 open-telemetry 中对于可观测性遥测的设定和demo事例 期间也看了demo中kafka的链路追踪，确实比较复杂 
+- 建议集成三方框架使用 open-telemetry 时先看官方框架是否有使用demo 以及 open-telemetry-go的contrib 写的比较详细 不推荐直接open-telemetry官方demo直接使用 但可以作为参考 目前 gin go-kit（已舍弃 但能用） 遥测都有集成 建立熟悉example再来应用

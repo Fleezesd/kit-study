@@ -9,6 +9,10 @@ import (
 	"github.com/fleezesd/kit-study/pkg/auth"
 	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 	"github.com/fleezesd/kit-study/pkg/token"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/go-kit/kit/otelkit"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
+	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
 type Service interface {
@@ -36,6 +40,11 @@ func (s baseServer) Health(ctx context.Context, request interface{}) (res interf
 }
 
 func (s baseServer) Login(ctx context.Context, req *pb.LoginRequest) (rsp *pb.LoginResponse, err error) {
+	tracer := ctx.Value("tracer").(trace.Tracer)
+	otelkit.WithOperation("login")
+	_, span := tracer.Start(ctx, "login", oteltrace.WithAttributes(attribute.String("username", req.GetUsername())))
+	defer span.End()
+	log.Debugw("loginEndpoint span", "span", span)
 	rsp = &pb.LoginResponse{}
 	log.Debugw(fmt.Sprint(ctx.Value(ContextReqUUid)), "service", "login")
 	if req.Username != "admin" {

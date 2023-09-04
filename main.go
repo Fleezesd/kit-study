@@ -14,6 +14,7 @@ import (
 	"github.com/fleezesd/kit-study/internal/iam/service"
 	"github.com/fleezesd/kit-study/internal/iam/transport"
 	"github.com/fleezesd/kit-study/internal/pkg/log"
+	"github.com/fleezesd/kit-study/pkg/opentelemetry/trace"
 	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
 	"github.com/fleezesd/kit-study/pkg/rate"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
@@ -48,11 +49,18 @@ func HTTPServerRun(lc fx.Lifecycle, handler http.Handler) {
 
 func GRPCServerRun(lc fx.Lifecycle, grpcServer pb.UserServer) {
 	flag.Parse()
-	srv := grpc.NewServer(grpc.UnaryInterceptor(grpctransport.Interceptor))
+	srv := grpc.NewServer(
+		grpc.UnaryInterceptor(grpctransport.Interceptor))
 	// etcd 注册
 	var (
 		registry etcd.Registry
 	)
+	// opentelemetry trace provider
+	tp, err := trace.NewTraceProvider()
+	if err != nil {
+		log.Fatalw("make trace provider err", "err", err)
+		return
+	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			ln, err := net.Listen("tcp", *grpcAddr)
@@ -73,6 +81,11 @@ func GRPCServerRun(lc fx.Lifecycle, grpcServer pb.UserServer) {
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
+			defer func() {
+				if err := tp.Shutdown(context.Background()); err != nil {
+					log.Debugw("Error shutting down tracer provider", "err", err)
+				}
+			}()
 			srv.GracefulStop()
 			registry.UnRegistry()
 			return nil

@@ -7,9 +7,8 @@ import (
 
 	"github.com/fleezesd/kit-study/internal/iam/service"
 
-	"github.com/go-kit/kit/endpoint"
-
 	pb "github.com/fleezesd/kit-study/pkg/proto/iam"
+	"github.com/go-kit/kit/endpoint"
 )
 
 // service层方法 封装到endpoint

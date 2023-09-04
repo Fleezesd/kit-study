@@ -17,7 +17,6 @@ import (
 
 // NewGRPCClient returns a Service backed by a gRPC server at the other end of the conn
 func (u *UserAgent) NewGRPCClient(conn *grpc.ClientConn) service.Service {
-
 	// global client middlewares  client的全局中间件
 	options := []grpctransport.ClientOption{
 		grpctransport.ClientBefore(func(ctx context.Context, m *metadata.MD) context.Context {
